@@ -3,7 +3,7 @@ document.getElementById('search').onclick = function () {
     const searchTitle = getId('text').value;
     const xhr = new XMLHttpRequest();
     console.log('створення запиту');
-    xhr.open('GET', `http://www.omdbapi.com/?s=${searchTitle}&apikey=f3f9eaff`, true);
+    xhr.open('GET', `https://www.omdbapi.com/?s=${searchTitle}&apikey=f3f9eaff`, true);
     xhr.onreadystatechange = function () {
         if (xhr.readyState == 4 && xhr.status == 200) {
             const data = JSON.parse(xhr.responseText)
@@ -41,7 +41,7 @@ function details(data) {
             getId('cardPoster').src = data.Search[j].Poster;
             getId('cardTitle').textContent = title;
             const xhr = new XMLHttpRequest();
-            xhr.open('GET', `http://www.omdbapi.com/?t=${title}&plot=full&apikey=f3f9eaff`, true);
+            xhr.open('GET', `https://www.omdbapi.com/?t=${title}&plot=full&apikey=f3f9eaff`, true);
             xhr.onreadystatechange = function () {
                 if (xhr.readyState == 4 && xhr.status == 200) {
                     const details = JSON.parse(xhr.responseText)
