@@ -1,19 +1,19 @@
 let getId = x => document.getElementById(x);
 document.getElementById('search').onclick = function () {
     const searchTitle = getId('text').value;
-    const xhr = new XMLHttpRequest();
-    console.log('створення запиту');
-    xhr.open('GET', `https://www.omdbapi.com/?s=${searchTitle}&apikey=f3f9eaff`, true);
-    xhr.onreadystatechange = function () {
-        if (xhr.readyState == 4 && xhr.status == 200) {
-            const data = JSON.parse(xhr.responseText)
+    const searchURL = `https://www.omdbapi.com/?s=${searchTitle}&apikey=f3f9eaff`;
+    sendRequest('GET', searchURL)
+        .then(data => {
             console.log(data);
-            render(data);
+            render(data)
             details(data)
-        }
-    }
-    xhr.send();
-    console.log('відправка запиту');
+        });
+}
+
+function sendRequest(method, searchURL) {
+    return fetch(searchURL).then(response => {
+        return response.json();
+    })
 }
 
 function render(data) {
@@ -40,18 +40,20 @@ function details(data) {
             let title = data.Search[j].Title;
             getId('cardPoster').src = data.Search[j].Poster;
             getId('cardTitle').textContent = title;
-            const xhr = new XMLHttpRequest();
-            xhr.open('GET', `https://www.omdbapi.com/?t=${title}&plot=full&apikey=f3f9eaff`, true);
-            xhr.onreadystatechange = function () {
-                if (xhr.readyState == 4 && xhr.status == 200) {
-                    const details = JSON.parse(xhr.responseText)
+            const detailsURL = `https://www.omdbapi.com/?t=${title}&plot=full&apikey=f3f9eaff`
+            detailsRequest('GET', detailsURL)
+                .then(details => {
+                    renderInfo(details)
                     console.log(details);
-                    renderInfo(details);
-                }
-            }
-            xhr.send();
+                })
         }
     }
+}
+
+function detailsRequest(method, searchURL) {
+    return fetch(searchURL).then(response => {
+        return response.json();
+    })
 }
 
 function renderInfo(details) {
@@ -63,9 +65,17 @@ function renderInfo(details) {
     getId('actors').innerHTML = `<span style="font-weight: bold;">Starring:</span>${details.Actors}`;
     getId('boxOffice').innerHTML = `<span style="font-weight: bold;">BoxOffice:</span>${details.BoxOffice}`;
     getId('awards').innerHTML = `<span style="font-weight: bold;">Awards:</span>${details.Awards}`;
-    getId('ratingsInternet').textContent = `${details.Ratings[0].Source} ${details.Ratings[0].Value}`
-    getId('ratingsRotten').textContent = `${details.Ratings[1].Source} ${details.Ratings[1].Value}`
-    getId('ratingsMet').textContent = `${details.Ratings[2].Source} ${details.Ratings[2].Value}`
+    if (details.Ratings.length === 3) {
+        getId('ratingsInternet').textContent = `${details.Ratings[0].Source} ${details.Ratings[0].Value}`
+        getId('ratingsRotten').textContent = `${details.Ratings[1].Source} ${details.Ratings[1].Value}`
+        getId('ratingsMet').textContent = `${details.Ratings[2].Source} ${details.Ratings[2].Value}`
+    } else if (details.Ratings.length === 2) {
+        getId('ratingsInternet').textContent = `${details.Ratings[0].Source} ${details.Ratings[0].Value}`
+        getId('ratingsRotten').textContent = `${details.Ratings[1].Source} ${details.Ratings[1].Value}`
+    } else {
+        getId('ratingsInternet').textContent = `${details.Ratings[0].Source} ${details.Ratings[0].Value}`
+    }
+
 
 
 }
