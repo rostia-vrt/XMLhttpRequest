@@ -8,6 +8,7 @@ document.getElementById('search').onclick = function () {
             render(data)
             details(data)
         });
+    getId('text').value= "";
 }
 
 function sendRequest(method, searchURL) {
